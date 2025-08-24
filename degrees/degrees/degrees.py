@@ -24,7 +24,7 @@ def load_data(directory):
             people[row["id"]] = {
                 "name": row["name"],
                 "birth": row["birth"],
-                "movies": set()
+                "movies": set(),
             }
             if row["name"].lower() not in names:
                 names[row["name"].lower()] = {row["id"]}
@@ -38,7 +38,7 @@ def load_data(directory):
             movies[row["id"]] = {
                 "title": row["title"],
                 "year": row["year"],
-                "stars": set()
+                "stars": set(),
             }
 
     # Load stars
@@ -84,14 +84,15 @@ def main():
             print(f"{i + 1}: {person1} and {person2} starred in {movie}")
 
 
-
 def shortest_path(source, target):
     """
     Returns the shortest list of (movie_id, person_id) pairs
     that connect the source to the target.
 
     If no possible path, returns None.
-    """   
+    """
+    if source == target:
+        return []
     queueFrontier = QueueFrontier()
     path = []
     explored = set()
@@ -99,21 +100,26 @@ def shortest_path(source, target):
     node = Node(state=source, parent=None, action=None)
     queueFrontier.add(node)
 
-    while queueFrontier.frontier is not None:   
-        node = queueFrontier.remove()
-        explored.add(node.state)
-        for neibour in neighbors_for_person(node.state):
-            child = Node(state=neibour[1], parent=node, action=neibour[0])
-            if child.state in explored:
-                continue
-            if child.state == target:
-                while child.parent is not None:
-                    path.append((child.action, child.state))
-                    child = child.parent
-                path.reverse()
-                return path          
-            queueFrontier.add(child)
-    return None
+    try:
+        while queueFrontier.frontier is not None:
+            node = queueFrontier.remove()
+            explored.add(node.state)
+            for neibour in neighbors_for_person(node.state):
+                child = Node(state=neibour[1], parent=node, action=neibour[0])
+                if child.state in explored:
+                    continue
+                if child.state == target:
+                    while child.parent is not None:
+                        path.append((child.action, child.state))
+                        child = child.parent
+                    if len(path) == 0:
+                        return None
+                    path.reverse()
+                    return path
+                queueFrontier.add(child)
+        return None
+    except Exception:
+        return None
 
 
 def person_id_for_name(name):
