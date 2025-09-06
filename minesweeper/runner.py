@@ -47,7 +47,7 @@ flags = set()
 lost = False
 
 # Show instructions initially
-instructions = False
+instructions = True
 
 while True:
 
